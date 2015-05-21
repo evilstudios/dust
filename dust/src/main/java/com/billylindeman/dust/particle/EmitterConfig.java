@@ -8,6 +8,7 @@ import android.util.Log;
 import com.billylindeman.dust.util.Color;
 import com.billylindeman.dust.util.Vector2;
 
+import java.io.IOException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -159,8 +160,15 @@ public class EmitterConfig {
 
         byte[] compressedImageBytes = Base64.decode(base64Data, Base64.DEFAULT);
         GZIPInputStream decrompressionStream = new GZIPInputStream(new ByteArrayInputStream(compressedImageBytes));
-
-        return BitmapFactory.decodeStream(decrompressionStream);
+        try {
+            return BitmapFactory.decodeStream(decrompressionStream);
+        } finally {
+            try {
+                decrompressionStream.close();
+            } catch (IOException e){
+                // ignore
+            }
+        }
     }
 
     private Color parseColorValueForElement(Document doc, String name) {
